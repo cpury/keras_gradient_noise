@@ -2,7 +2,7 @@
 
 Simple way to add gradient noise to any Keras optimizer.
 
-Install via: `pip install keras_gradient_noise`.
+Install via: `pip install keras_gradient_noise`
 
 
 ## Gradient Noise
