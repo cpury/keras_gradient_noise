@@ -3,6 +3,13 @@ import keras
 from keras import backend as K
 
 
+def _get_shape(x):
+    if hasattr(x, 'dense_shape'):
+        return x.dense_shape
+
+    return K.shape(x)
+
+
 def add_gradient_noise(BaseOptimizer):
     """
     Given a Keras-compatible optimizer class, returns a modified class that
@@ -35,7 +42,7 @@ def add_gradient_noise(BaseOptimizer):
 
             grads = [
                 grad + K.random_normal(
-                    grad.shape,
+                    _get_shape(grad),
                     mean=0.0,
                     stddev=K.sqrt(variance),
                     dtype=K.dtype(grads[0])
