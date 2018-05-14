@@ -21,7 +21,12 @@ setup(
     license='MIT',
     packages=['keras_gradient_noise'],
     install_requires=[
-        'keras',
+        'keras'
     ],
-    zip_safe=False,
+    extras_require={
+        'tests': [
+            'pytest'
+        ]
+    },
+    zip_safe=False
 )
