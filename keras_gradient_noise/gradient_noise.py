@@ -1,23 +1,26 @@
 import inspect
-import keras
-from keras import backend as K
+import importlib
 
-
-def _get_shape(x):
-    if hasattr(x, 'dense_shape'):
-        return x.dense_shape
-
-    return K.shape(x)
-
-
-def add_gradient_noise(BaseOptimizer):
+def add_gradient_noise(BaseOptimizer, keras=None):
     """
     Given a Keras-compatible optimizer class, returns a modified class that
     supports adding gradient noise as introduced in this paper:
     https://arxiv.org/abs/1511.06807
     The relevant parameters from equation 1 in the paper can be set via
     noise_eta and noise_gamma, set by default to 0.3 and 0.55 respectively.
+    By default, tries to guess whether to use default Keras or tf.keras based
+    on where the optimizer was imported from. You can also specify which Keras
+    to use by passing the imported module.
     """
+    if keras is None:
+        # Import it automatically. Try to guess from the optimizer's module
+        if hasattr(BaseOptimizer, '__module__') and BaseOptimizer.__module__.startswith('keras'):
+            keras = importlib.import_module('keras')
+        else:
+            keras = importlib.import_module('tensorflow.keras')
+
+    K = keras.backend
+
     if not (
         inspect.isclass(BaseOptimizer) and
         issubclass(BaseOptimizer, keras.optimizers.Optimizer)
@@ -25,6 +28,12 @@ def add_gradient_noise(BaseOptimizer):
         raise ValueError(
             'add_gradient_noise() expects a valid Keras optimizer'
         )
+
+    def _get_shape(x):
+        if hasattr(x, 'dense_shape'):
+            return x.dense_shape
+
+        return K.shape(x)
 
     class NoisyOptimizer(BaseOptimizer):
         def __init__(self, noise_eta=0.3, noise_gamma=0.55, **kwargs):

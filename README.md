@@ -1,6 +1,6 @@
 # keras_gradient_noise
 
-Simple way to add gradient noise to any Keras optimizer.
+Simple way to add gradient noise to any Keras / TensorFlow-Keras optimizer.
 
 Install via: `pip install keras_gradient_noise`
 
@@ -42,6 +42,21 @@ have the following default values:
 
 ```python
 NoisyOptimizer(noise_eta=0.3, noise_gamma=0.55)
+```
+
+
+## Keras vs TF.Keras
+
+The package tries to be smart about whether to use `tf.keras` or standalone `keras`.
+If you get an error in your case, try passing a specific Keras-module to the
+`add_gradient_noise` function. E.g.
+
+```
+import keras
+
+...
+
+add_gradient_noise(MyOptim, keras=keras)
 ```
 
 
